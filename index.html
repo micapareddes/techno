@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script src="./vue.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link
+    rel="stylesheet"
+    type="text/css"
+    href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+    <link rel="stylesheet" href="./style.css" />
+    <title>Techno</title>
+  </head>
+  <body>
+    <div id="app">
+        <header class="header">
+            <img class="logo" src="./assets/techno.svg" alt="Logo Techno" />
+            <div class="carrinho_menu" @click="carrinhoAtivo = true">
+                {{precoTotalCarrinho | preco}} | {{itemsCarrinho.length}}
+                <i class="ph-fill ph-shopping-cart"></i>
+            </div>
+        </header>
+
+        <section class="produtos">
+            <div v-for="produto in produtos" class="produto" @click="abrirModal(produto.id)">
+                <img :src="produto.img" :alt="produto.nome" class="produto_img"/>
+                <div class="produto_info">
+                    <span class="produto_preco">{{produto.preco | preco}}</span>
+                    <h2 class="produto_nome">{{produto.nome }}</h2>
+                </div>
+            </div>
+        </section>
+        <section @click="fecharModal" class="modal modal_produto" v-if="produtoSelecionado">
+            <div class="modal_container">
+                <div class="modal_img_container">
+                    <img :src="produtoSelecionado.img" alt="produtoSelecionado.nome">
+                </div>
+                <div class="modal_dados">
+                    <button @click="produtoSelecionado = false" class="modal_fechar">X</button>
+                    <span class="modal_preco">{{produtoSelecionado.preco | preco}}</span>
+                    <h2 class="modal_nome"> {{produtoSelecionado.nome}}</h2>
+                    <p class="">{{produtoSelecionado.descricao}}</p>
+                    <button :disabled="produtoSelecionado.estoque <= 0" @click="adicionarItemAoCarrinho" class="modal_btn">
+                        {{ produtoSelecionado.estoque > 0 ? 'Adicionar' : 'Produto Esgotado'}}
+                        <i v-if="produtoSelecionado.estoque > 0" class="ph-fill ph-shopping-cart"></i>
+                    </button>
+                </div>
+                <div class="avaliacoes">
+                    <h2 class="avaliacoes_subtitulo">Avaliações</h2>
+                    <ul>
+                        <li v-for="avaliacao in produtoSelecionado.avaliacoes" class="avaliacao">
+                            <p class="avaliacao_descricao">{{avaliacao.descricao}}</p>
+                            <p class="avaliacao_user">
+                                <i class="ph-fill ph-star"></i>
+                                {{avaliacao.estrelas}} | {{avaliacao.nome}}
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section v-show="carrinhoAtivo" class="modal modal_carrinho" @click="fecharCarrinho">
+            <div class="carrinho_container">
+                <button @click="fecharCarrinho" class="modal_fechar">X</button>
+                <h2 class="carrinho_titulo">Carrinho</h2>
+                <div v-if="itemsCarrinho.length > 0">
+                    <ul class="carrinho_lista">
+                        <li v-for="(item, index) in itemsCarrinho" class="carrinho_item">
+                            <p>{{item.nome}}</p>
+                            <p class="carrinho_preco">{{item.preco | preco}}</p>
+                            <button class="carrinho_remover" @click="removerItemDoCarrinho(index)">X</button>
+                        </li>
+                    </ul>
+                    <p class="carrinho_total">{{precoTotalCarrinho | preco}}</p>
+                    <button class="modal_btn">Finalizar Compra</button>
+                </div>
+                <p v-else="itemsCarrinho.length === 0">O carrinho está vazio :(</p>
+            </div>
+        </section>
+
+        <div v-show="mostrarAlerta" class="alerta">
+            <p class="alerta_mensagem">{{mensagemAlerta}}</p>
+        </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
